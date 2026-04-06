@@ -1,75 +1,57 @@
-/**
- * Blog Posts Collection
- *
- * Example collection configuration for blog posts
- */
-
 import type { CollectionConfig } from '@sonicjs-cms/core'
 
 export default {
-  name: 'blog-posts',
-  displayName: 'Blog Posts',
-  description: 'Manage your blog posts',
-  icon: '📝',
+  name: 'media',
+  displayName: 'المحتوى المرئي',
+  description: 'إدارة الأفلام والمسلسلات العربية والأجنبية',
+  icon: '🎬',
 
   schema: {
     type: 'object',
     properties: {
-      title: {
-        type: 'string',
-        title: 'Title',
-        required: true,
-        maxLength: 200
+      id: { type: 'number', title: 'ID (TMDB/Internal)', required: true },
+      title: { type: 'string', title: 'العنوان الأصلي', required: true },
+      titleAr: { type: 'string', title: 'العنوان بالعربي' },
+      slug: { type: 'slug', title: 'رابط URL Slug', required: true },
+      type: { 
+        type: 'select', 
+        title: 'النوع', 
+        enum: ['movie', 'tv'], 
+        enumLabels: ['فيلم', 'مسلسل'],
+        default: 'movie' 
       },
-      slug: {
-        type: 'slug',
-        title: 'URL Slug',
-        required: true,
-        maxLength: 200
+      lang: { 
+        type: 'select', 
+        title: 'اللغة', 
+        enum: ['ar', 'en'], 
+        enumLabels: ['عربي', 'أجنبي'],
+        default: 'ar' 
       },
-      excerpt: {
-        type: 'textarea',
-        title: 'Excerpt',
-        maxLength: 500,
-        helpText: 'A short summary of the post'
+      year: { type: 'number', title: 'سنة الإنتاج' },
+      director: { type: 'string', title: 'المخرج' },
+      cast: { 
+        type: 'list', // مصفوفة نصوص للممثلين
+        title: 'طاقم العمل',
+        items: { type: 'string' }
       },
-      content: {
-        type: 'quill',
-        title: 'Content',
-        required: true
+      genres: { 
+        type: 'list', 
+        title: 'التصنيفات', 
+        items: { type: 'string' } 
       },
-      featuredImage: {
-        type: 'media',
-        title: 'Featured Image'
-      },
-      author: {
-        type: 'string',
-        title: 'Author',
-        required: true
-      },
-      publishedAt: {
-        type: 'datetime',
-        title: 'Published Date'
-      },
-      status: {
-        type: 'select',
-        title: 'Status',
-        enum: ['draft', 'published', 'archived'],
-        enumLabels: ['Draft', 'Published', 'Archived'],
-        default: 'draft'
-      },
-      tags: {
-        type: 'string',
-        title: 'Tags',
-        helpText: 'Comma-separated tags'
+      overview: { type: 'textarea', title: 'قصة العمل' },
+      // في الأفلام نضع الرابط هنا مباشرة، في المسلسلات نتركه فارغاً ونستخدم الـ Episodes Collection
+      videoUrl: { 
+        type: 'string', 
+        title: 'رابط الفيديو (للأفلام فقط)', 
+        helpText: 'اتركه فارغاً إذا كان مسلسلاً' 
       }
     },
-    required: ['title', 'slug', 'content', 'author']
+    required: ['id', 'title', 'slug', 'type', 'lang']
   },
 
-  // List view configuration
-  listFields: ['title', 'author', 'status', 'publishedAt'],
-  searchFields: ['title', 'excerpt', 'author'],
-  defaultSort: 'createdAt',
+  listFields: ['title', 'type', 'lang', 'year'],
+  searchFields: ['title', 'titleAr', 'slug', 'cast'],
+  defaultSort: 'year',
   defaultSortOrder: 'desc'
 } satisfies CollectionConfig
